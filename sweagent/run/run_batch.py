@@ -352,6 +352,7 @@ class RunBatch:
         env.deployment.add_hook(
             SetStatusDeploymentHook(instance.problem_statement.id, self._progress_manager.update_instance_status)
         )
+        print(instance.problem_statement)
         try:
             env.start()
             self._chooks.on_instance_start(index=0, env=env, problem_statement=instance.problem_statement)

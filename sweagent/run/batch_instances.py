@@ -85,7 +85,7 @@ class SimpleBatchInstance(BaseModel):
     present in the docker container.
     """
 
-    image_name: str
+    #image_name: str
     problem_statement: str
     instance_id: str
     repo_name: str = ""
@@ -120,9 +120,10 @@ class SimpleBatchInstance(BaseModel):
         else:
             repo = LocalRepoConfig(path=Path(self.repo_name), base_commit=self.base_commit)
         if isinstance(deployment, LocalDeploymentConfig):
-            if self.image_name:
-                msg = "Local deployment does not support image_name"
-                raise ValueError(msg)
+            #if self.image_name:
+            #    print(self.image_name)
+            #    msg = "Local deployment does not support image_name"
+            #    raise ValueError(msg)
             return BatchInstance(
                 env=EnvironmentConfig(deployment=deployment, repo=repo), problem_statement=problem_statement
             )
@@ -160,11 +161,12 @@ class SimpleBatchInstance(BaseModel):
             # Docker doesn't allow double underscore, so we replace them with a magic token
             id_docker_compatible = iid.replace("__", "_1776_")
             image_name = f"swebench/sweb.eval.x86_64.{id_docker_compatible}:latest"
+            #image_name=image_name,
+            #repo_name="/testbed",
         return cls(
-            image_name=image_name,
             problem_statement=instance["problem_statement"],
             instance_id=iid,
-            repo_name="testbed",
+            repo_name='https://github.com/' + instance['repo'],
             base_commit=instance["base_commit"],
         )
 
@@ -251,8 +253,11 @@ class SWEBenchInstances(BaseModel, AbstractInstanceSource):
 
     split: Literal["dev", "test"] = "dev"
 
+    #deployment: DeploymentConfig = Field(
+    #    default_factory=lambda: DockerDeploymentConfig(image="python:3.11"),
+    #)
     deployment: DeploymentConfig = Field(
-        default_factory=lambda: DockerDeploymentConfig(image="python:3.11"),
+        default_factory=lambda: LocalDeploymentConfig(),
     )
     """Deployment configuration. Note that the image_name option is overwritten by the images specified in the task instances.
     """

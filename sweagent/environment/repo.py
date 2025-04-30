@@ -100,8 +100,10 @@ class LocalRepoConfig(BaseModel):
 
     def copy(self, deployment: AbstractDeployment):
         self.check_valid_repo()
+        print(self)
+        print(self.repo_name)
         asyncio.run(
-            deployment.runtime.upload(UploadRequest(source_path=str(self.path), target_path=f"/{self.repo_name}"))
+            deployment.runtime.upload(UploadRequest(source_path=str(self.path), target_path=f"/scratch/testbed/{self.repo_name}"))
         )
         r = asyncio.run(deployment.runtime.execute(Command(command=f"chown -R root:root {self.repo_name}", shell=True)))
         if r.exit_code != 0:
@@ -160,6 +162,7 @@ class GithubRepoConfig(BaseModel):
                 Command(
                     command=" && ".join(
                         (
+                            "cd /scratch/testbed",
                             f"mkdir {self.repo_name}",
                             f"cd {self.repo_name}",
                             "git init",

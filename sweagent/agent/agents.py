@@ -805,7 +805,7 @@ class DefaultAgent(AbstractAgent):
         # Let us manually run the submission command and collect the output
         repo_name = "/"
         if self._env.repo is not None:
-            repo_name = f"/{self._env.repo.repo_name}"
+            repo_name = f"/scratch/testbed/{self._env.repo.repo_name}"
         submission_command = "git add -A && git diff --cached > /root/model.patch"
         self.logger.info("Executing submission command %s in %s", submission_command, repo_name)
         try:
@@ -868,7 +868,7 @@ class DefaultAgent(AbstractAgent):
                     PatchFormatter(
                         patch,
                         read_method=lambda path: self._env.read_file(
-                            PurePosixPath("/") / self._env.repo.repo_name / path
+                            PurePosixPath("/scratch/testbed") / self._env.repo.repo_name / path
                         ),  # type: ignore[attr-defined]
                     )
                     if patch

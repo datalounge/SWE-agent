@@ -141,7 +141,7 @@ class SWEEnv:
             observation: output from container
             info: additional information (e.g. debugging information)
         """
-        self.communicate(input="cd /", check="raise")
+        self.communicate(input="cd /scratch/testbed", check="raise")
         self._copy_repo()
         self._reset_repository()
         self._chook.on_environment_startup()
@@ -150,7 +150,8 @@ class SWEEnv:
         """Clean repository of any modifications + Checkout base commit"""
         if self.repo is not None:
             startup_commands = [
-                f"cd /{self.repo.repo_name}",
+                f"python3.11 -m virtualenv /scratch/testbed/.{self.repo.repo_name} && export PYENV_VIRTUALENV_DISABLE_PROMPT=1 && export VIRTUAL_ENV_DISABLE_PROMPT=1 && source /scratch/testbed/.{self.repo.repo_name}/bin/activate",
+                f"cd /scratch/testbed/{self.repo.repo_name}",
                 "export ROOT=$(pwd -P)",
             ]
             self.logger.debug("Resetting repository %s to commit %s", self.repo.repo_name, self.repo.base_commit)
@@ -211,6 +212,7 @@ class SWEEnv:
         """
         self.logger.log(logging.TRACE, "Input:\n%s", input)  # type: ignore
         rex_check = "silent" if check else "ignore"
+        print(input)
         r = asyncio.run(
             self.deployment.runtime.run_in_session(BashAction(command=input, timeout=timeout, check=rex_check))
         )

@@ -1,4 +1,20 @@
+#env:
+#  post_startup_commands:
+#    - ls
+#    - date
+#  deployment:
+#    type: docker
+
 agent:
+  model:
+    name: hosted_vllm/Qwen/Qwen2.5-1.5B-Instruct
+    api_base: http://localhost:8000/v1
+    per_instance_cost_limit: 0
+
+
+    total_cost_limit: 0
+    per_instance_call_limit: 100
+    max_input_tokens: 32048
   templates:
     system_template: |-
       SETTING: You are an autonomous programmer, and you're working directly in the command line with a special interface.
@@ -119,8 +135,10 @@ agent:
       - path: tools/edit_replace
       - path: tools/submit
     enable_bash_tool: true
+    #parse_function:
+    #  type: function_calling
     parse_function:
-      type: function_calling
+      type: thought_action
   history_processors:
     - type: last_n_observations
       n: 5
